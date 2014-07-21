@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Mastering Javascript: Prototypal Inheritance - Francisco M&eacute;ndez Vilas</title>
+
+    <meta name="description" content="Mastering Javascript: Prototypal Inheritance slides by Francisco Mendez Vilas">
+    <meta name="author" content="Francisco Mendez Vilas">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/fmvilas.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <!-- For grid system -->
+    <link rel="stylesheet" href="lib/css/960.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="lib/css/animate.css">
+    <!-- My presentation specific CSS -->
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+        if( window.location.search.match( /print-pdf/gi ) ) {
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'css/print/pdf.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        }
+    </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section data-state="cover" data-background="img/cover.png">
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Today you'll learn...</h1>
+                    </header>
+                    
+                    <article>
+                        <ul class="summary">
+                            <li class="fragment">What is a prototype</li>
+                            <li class="fragment">How prototypal inheritance works</li>
+                            <li class="fragment">What is the prototype chain</li>
+                            <li class="fragment">Differences between __proto__ and prototype</li>
+                        </ul>
+                    </article>
+                </section>
+
+
+
+                <section id="start">
+                    <article>
+                        <h1>So, let's start!</h1>
+                        <img src="img/peque.png">
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>What is a prototype?</h1>
+                    </header>
+
+                    <article>
+                        <p class="item">
+                        A prototype is an object of any type which is used to construct future copies of it.
+                        </p>
+                        <p class="item fragment">
+                        Just like cars in a factory. First, engineers design and construct a prototype and, when done, it's manufactured in series.
+                        </p>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>What is a prototype?</h1>
+                    </header>
+                    
+                    <article>
+                        <pre><code data-trim class="javascript">
+var Animal = {
+    walk: function() {
+        console.log('Walking...');
+    },
+    
+    eat: function() {
+        console.log('Eating...');
+    }
+};
+
+var Person = function() {
+    this.talk = function() {
+        console.log('Hello!');
+    };
+};
+                        </code></pre>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototypal Inheritance</h1>
+                    </header>
+
+                    <article>
+                        <p class="item">
+                        	In most languages, there are classes and objects. Classes inherit from other classes.
+						</p>
+						<p class="item fragment">
+							In JavaScript, the inheritance is prototype-based. That means there are no classes. Instead, an object inherits from another object.
+                        </p>
+                        <p data-animation="tada" class="item green fragment">
+                        	But, how?
+                        </p>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototypal Inheritance</h1>
+                    </header>
+
+                    <article>
+                        <pre><code data-trim class="javascript">
+var Animal = {
+    walk: function() {
+        console.log('Walking...');
+    },
+    
+    eat: function() {
+        console.log('Eating...');
+    }
+};
+
+var Person = function() {
+    this.talk = function() {
+        console.log('Hello!');
+    };
+};
+
+Person.prototype = Animal;
+                        </code></pre>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototypal Inheritance</h1>
+                    </header>
+
+                    <article>
+                        <pre><code data-trim class="javascript">
+...
+
+Person.prototype = Animal;
+var David = new Person();
+
+// Now we can do...
+David.talk(); // Hello!
+
+// But we can also do...
+David.eat(); // Eating...
+David.walk(); // Walking...
+                        </code></pre>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototypal Inheritance</h1>
+                    </header>
+
+                    <article>
+                    	<p class="item">
+                    		But, if we look inside the newly created "David" object, you'll see there are not "eat" and "walk" methods.
+                    	</p>
+                    	<p data-animation="bounceInUp" class="item green fragment">
+                    		So, how is it doing?
+                    	</p>
+                    	<p class="item fragment">
+                    		By using the prototype chain. Let's dig deeper in this concept.
+                    	</p>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototype Chain</h1>
+                    </header>
+
+                    <article>
+                        <pre><code data-trim class="javascript">
+// console.dir(David);
+{
+    talk: function () { ... },
+    __proto__: {
+        walk: function () { ... },
+        eat: function () { ... },
+        __proto__: Object
+    }
+}
+                    </code></pre>
+                    <p class="fragment item text-medium_big" data-animation="bounceInUp">
+                    	When you call a function or access a member, Javascript looks into the first level of the prototype chain, if it doesn't exist it looks into the second level, then third... and so on.
+                    </p>
+                    <p class="fragment item text-medium_big" data-animation="bounceInUp">
+                    	It stops looking when finds a null __proto__ property. In our example, if we extend the last __proto__, we'll see "__proto__: null".
+                    </p>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Prototype Chain</h1>
+                        <h2 class="text-medium">Searching for a member in the prototype chain</h2>
+                    </header>
+
+                    <article>
+                    	<div class="graph">
+                    		<div class="fragment arrow medium" data-fragment-index="1"><span>David.eat()</span></div>
+	                    	<div class="fragment decision" data-fragment-index="2">
+	                    		<span>Exists "eat" function in David's 1st level?</span>
+	                    		<div class="fragment arrow small red" data-fragment-index="3"><span>Yes</span></div>
+	                    	</div>
+	                    	<div class="fragment arrow small green" data-fragment-index="3"><span>No</span></div>
+	                    	<div class="fragment decision" data-fragment-index="4">
+	                    		<span>Exists "eat" function in David's 2nd level?</span>
+	                    		<div class="fragment arrow small green" data-fragment-index="5"><span>Yes</span></div>
+	                    	</div>
+	                    	<div class="fragment arrow small" data-fragment-index="5"><span></span></div>
+	                    	<div class="fragment circle black small" data-fragment-index="5"><span>End</span></div>
+	                    </div>
+                    </article>
+                </section>
+
+
+
+                <section>
+                    <header>
+                        <h1>Differences</h1>
+                        <h2>between __proto__ and prototype</h2>
+                    </header>
+
+                    <article>
+                    	<table>
+                    		<thead>
+                    			<tr>
+                    				<td>__proto__</td>
+                    				<td>prototype</td>
+                    			</tr>
+                    		</thead>
+                    		<tbody>
+                    			<tr>
+                    				<td>Present</td>
+                    				<td>Future</td>
+                    			</tr>
+                    			<tr>
+                    				<td>JS sniffs it to find a member.</td>
+                    				<td>JS will use it to create the __proto__ of another object.</td>
+                    			</tr>
+                    			<tr>
+                    				<td>Contains the prototype chain.</td>
+                    				<td>Doesn't contain the prototype chain.</td>
+                    			</tr>
+                    			<tr>
+                    				<td>Required. Every object has its own __proto__.</td>
+                    				<td>Optional. You'll use it to create new instances of this object.</td>
+                    			</tr>
+                    			<tr>
+                    				<td>It's the parent of the object.</td>
+                    				<td>It's what you want to propagate through the prototype chain.</td>
+                    			</tr>
+                    		</tbody>
+                    	</table>
+                    </article>
+                </section>
+
+
+
+                <section id="bye">
+                    <article>
+                        <h1>Hope you liked it!</h1>
+                        <h1>Thank you!</h1>
+                        <img src="img/despedida.png">
+                    </article>
+                </section>
+
+
+
+                <section data-state="cover" data-background="img/about.png">
+                </section>
+
+            </div>
+
+        </div>
+
+		<svg>
+		    <defs>
+		        <clippath id="arrow_shape" clipPathUnits="objectBoundingBox">
+		            <polygon points="0 0, 0.8 0, 1 0.5, 0.8 1, 0 1, 0.2 0.5"></polygon>
+		        </clippath>
+		    </defs>
+		</svg>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.min.js"></script>
+
+<script>
+
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+
+    theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+    transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+    backgroundTransition: 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+    // Parallax scrolling
+    // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+    // parallaxBackgroundSize: '2100px 900px',
+
+    // Optional libraries used to extend on reveal.js
+    dependencies: [
+    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+    ]
+});
+
+
+
+Reveal.addEventListener('fragmentshown', function(ev) {
+	if( ev.fragment.attributes.getNamedItem('data-animation') ) {
+		var animationName = ev.fragment.attributes.getNamedItem('data-animation').value;
+
+		ev.fragment.classList.add('animated');
+		ev.fragment.classList.add(animationName);
+	}
+});
+
+Reveal.addEventListener('fragmenthidden', function(ev) {
+	if( ev.fragment.attributes.getNamedItem('data-animation') ) {
+		var animationName = ev.fragment.attributes.getNamedItem('data-animation').value;
+		
+		ev.fragment.classList.remove('animated');
+		ev.fragment.classList.remove(animationName);
+	}
+});
+
+</script>
+
+    </body>
+    </html>
