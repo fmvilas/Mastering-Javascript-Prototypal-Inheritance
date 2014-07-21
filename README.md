@@ -1,9 +1,9 @@
-Classical Inheritance vs Modular Patterns
-=========================================
+Mastering Javascript - Prototypal Inheritance
+=============================================
 
-Slides from my conference on Classical Inheritance, Prototypical Inheritance and Modular Patterns at Itnig, Barcelona.
+Slides from my conference on Prototypal Inheritance at Itnig, Barcelona.
 
-[Check it out here!](http://fmvilas.github.io/Classical-Inheritance-vs-Modular-Patterns)
+[Check it out here!](http://fmvilas.github.io/Mastering-Javascript-Prototypal-Inheritance)
 
 * Twitter: [@fmvilas](http://www.twitter.com/fmvilas)
 * Google+: [+FranciscoMendezVilas](https://plus.google.com/+FranciscoMendezVilas)
